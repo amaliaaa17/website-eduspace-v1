@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Platform Media Pembelajaran Interaktif Berbasis Website & Sistem Informasi Materi dan Tugas Perkuliahan Mahasiswa. Dilengkapi konten multimedia teks, video, audio podcast, kuis interaktif, dan pelacak progres belajar mandiri.">
+  <meta name="author" content="Mahasiswa Teknik Informatika - Analisis dan Desain Perangkat Lunak">
+  <title>EduCampus - Platform Media Pembelajaran Interaktif & Sistem Informasi Tugas Mahasiswa</title>
+  <link rel="stylesheet" href="css/styles.css?v=2.3">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <header class="app-navbar">
+    <div class="brand-container" onclick="switchTab('dashboard')">
+      <div class="brand-logo-icon">🎓</div>
+      <div>
+        <div class="brand-title">EduCampus Digital</div>
+        <div class="brand-subtitle">
+          <span class="status-pill-online"></span>
+          Portal Pembelajaran & Tugas Mahasiswa
+        </div>
+      </div>
+    </div>
+
+    <!-- Global Search -->
+    <div class="nav-search-bar">
+      <div class="search-input-wrapper">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="globalSearchInput" placeholder="Cari materi kuliah, UML, kuis, atau tugas..." autocomplete="off">
+        <span class="search-shortcut-badge">Ctrl+K</span>
+      </div>
+    </div>
+
+    <!-- Right Header Actions -->
+    <div class="nav-actions-group">
+      <!-- Dark / Light Mode Toggle -->
+      <button class="nav-btn-icon" id="themeToggleBtn" title="Ganti Tema Tampilan">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      </button>
+
+      <!-- Notification Bell -->
+      <button class="nav-btn-icon" onclick="showToast('Ada 2 tugas perkuliahan dengan tenggat waktu minggu ini!')" title="Notifikasi Akademik">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span class="badge-notification-count">2</span>
+      </button>
+
+      <!-- Student Profile Card -->
+      <div class="user-profile-widget" id="userProfileWidget" onclick="openProfileModal()" title="Klik untuk mengedit Profil Mahasiswa (Nama & NIM)">
+        <div class="avatar-initial-circle" id="userAvatarInitial">SD</div>
+        <div class="user-profile-info">
+          <span class="user-name-text" id="userNameDisplay">Salwa Della Amalia</span>
+          <span class="user-nim-text" id="userNimDisplay">24011150 • Sem. 5</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- App Shell: Sidebar + Content -->
+  <div class="app-layout-shell">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="app-sidebar">
+      <div>
+        <div class="sidebar-section-title">Navigasi Utama</div>
+        <ul class="sidebar-nav-menu">
+          <li class="sidebar-nav-item active">
+            <button data-tab="dashboard">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+              <span>Dashboard Utama</span>
+            </button>
+          </li>
+          <li class="sidebar-nav-item">
+            <button data-tab="classroom">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+              <span>Ruang Kelas Multimedia</span>
+              <span class="menu-badge">16 Sesi</span>
+            </button>
+          </li>
+          <li class="sidebar-nav-item">
+            <button data-tab="assignments">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+              <span>Pusat Tugas & Kumpul</span>
+              <span class="menu-badge" style="background: var(--accent-amber); color: #000;">Aktif</span>
+            </button>
+          </li>
+          <li class="sidebar-nav-item">
+            <button data-tab="resources">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+              <span>Bank Referensi & E-Book</span>
+            </button>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Quick Academic Progress Box -->
+      <div class="sidebar-academic-card">
+        <div class="stat-item-header">
+          <span>Progres Belajar ADPL</span>
+          <strong id="sidebarProgressText">6% Selesai</strong>
+        </div>
+        <div class="stat-progress-bar-bg">
+          <div class="stat-progress-bar-fill" id="sidebarProgressFill" style="width: 6%;"></div>
+        </div>
+        <div class="stat-metric-footer" id="sidebarProgressMetric">
+          1 dari 16 Pertemuan
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Viewport Panes -->
+    <main class="app-main-content">
+
+      <!-- ========================================== -->
+      <!-- TAB 1: DASHBOARD UTAMA                     -->
+      <!-- ========================================== -->
+      <section class="tab-pane active" id="tab-dashboard">
+        
+        <!-- Hero Welcome Banner with AI-Generated Illustration -->
+        <div class="hero-welcome-card">
+          <div class="hero-welcome-content">
+            <div class="hero-badge-tag">
+              <span>✨ Semester 5 • Tahun Ajaran 2026/2027</span>
+            </div>
+            <h1 class="hero-title" id="heroWelcomeTitle">Selamat Datang, Salwa Della Amalia!</h1>
+            <p class="hero-desc">
+              Portal Pembelajaran Mahasiswa Terpadu. Akses materi multi-format (teks, video, infografis, podcast), kerjakan latihan soal kuis interaktif, dan kelola pengumpulan tugas individu serta kelompok dalam satu tempat.
+            </p>
+            <div class="hero-actions">
+              <button class="btn-primary-gradient" data-action="goto-classroom">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                Mulai Belajar Materi
+              </button>
+              <button class="btn-secondary-glass" data-action="goto-assignments">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
+                Cek Tugas Mendatang
+              </button>
+            </div>
+          </div>
+          <div class="hero-visual-bg">
+            <img src="assets/hero_banner.jpg" alt="EduCampus Student Learning Platform Illustration">
+          </div>
+        </div>
+
+        <!-- Academic Key Metrics -->
+        <div class="metrics-grid-row">
+          <div class="metric-stat-card">
+            <div class="metric-icon-box blue">📖</div>
+            <div>
+              <div class="metric-data-val" id="metricCompletedSessions">1</div>
+              <div class="metric-data-label">Pertemuan Terselesaikan</div>
+            </div>
+          </div>
+          <div class="metric-stat-card">
+            <div class="metric-icon-box green">📝</div>
+            <div>
+              <div class="metric-data-val" id="metricSubmissions">0</div>
+              <div class="metric-data-label">Tugas Terkumpul</div>
+            </div>
+          </div>
+          <div class="metric-stat-card">
+            <div class="metric-icon-box amber">⚡</div>
+            <div>
+              <div class="metric-data-val" id="metricQuizzes">0</div>
+              <div class="metric-data-label">Kuis Diselesaikan</div>
+            </div>
+          </div>
+          <div class="metric-stat-card">
+            <div class="metric-icon-box purple">🎯</div>
+            <div>
+              <div class="metric-data-val" id="metricAvgQuizScore">0%</div>
+              <div class="metric-data-label">Rata-rata Nilai Kuis</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Academic Schedule Table Section (Daftar Kelas Kuliah) -->
+        <div id="scheduleTableContainer">
+          <!-- Populated dynamically via app.js -->
+        </div>
+
+        <!-- Course Cards Section -->
+        <div class="section-view-header">
+          <div>
+            <h2 class="section-view-title">Modul Pembelajaran & Silabus Kelas</h2>
+            <p class="section-view-subtitle">Pilih mata kuliah untuk menjelajahi silabus pertemuan, modul multimedia, kuis, dan tugas.</p>
+          </div>
+          <div style="display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap;">
+            <button class="btn-add-action" onclick="openCourseModal('add')">
+              + Tambah Mata Kuliah Baru
+            </button>
+            <button class="btn-pill-action" style="color: var(--accent-rose);" onclick="resetAllCourses()" title="Kembalikan ke 8 Mata Kuliah Asli">
+              ↺ Reset ke 8 Matkul Awal
+            </button>
+          </div>
+        </div>
+
+        <div class="courses-grid-cards" id="dashboardCoursesContainer">
+          <!-- Dynamic Course Cards Loaded from data.js -->
+        </div>
+
+      </section>
+
+      <!-- ========================================== -->
+      <!-- TAB 2: RUANG KELAS MULTIMEDIA              -->
+      <!-- ========================================== -->
+      <section class="tab-pane" id="tab-classroom">
+        
+        <!-- Top Course Selector Strip -->
+        <div class="course-navigator-strip">
+          <div class="current-course-selector" style="flex-wrap: wrap; gap: 0.6rem;">
+            <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-secondary);">Mata Kuliah Aktif:</span>
+            <select class="custom-select-styled" id="courseSelectDropdown">
+              <!-- Options loaded dynamically -->
+            </select>
+            <button class="btn-pill-action" onclick="openCourseModal('edit', state.currentCourseId)" title="Edit Data Mata Kuliah Ini">✏️ Edit Matkul</button>
+            <button class="btn-pill-action" style="color:var(--accent-rose);" onclick="deleteCourse(state.currentCourseId)" title="Hapus Mata Kuliah Ini">🗑️ Hapus Matkul</button>
+            <button class="btn-add-action" style="padding: 0.35rem 0.8rem; font-size: 0.76rem;" onclick="openCourseModal('add')">+ Tambah Matkul</button>
+          </div>
+
+          <div style="font-size: 0.82rem; color: var(--text-secondary);">
+            Silabus Lengkap Pertemuan 1 s.d. 16 • Pendekatan Multimedia Interaktif
+          </div>
+        </div>
+
+        <!-- Classroom 2-Column Split: Meetings Sidebar + Main Content Area -->
+        <div class="classroom-split-layout">
+          
+          <!-- Left: 16 Meetings Navigation Timeline -->
+          <div class="sessions-timeline-panel">
+            <div class="sessions-panel-header">
+              <!-- Row 1: Title and Primary Actions -->
+              <div class="sessions-header-row-primary">
+                <h3 class="sessions-panel-heading">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="sessions-heading-icon"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                  <span>Daftar Pertemuan</span>
+                </h3>
+                <div class="sessions-header-action-group">
+                  <button class="btn-timeline-action add" id="btnAddMeeting" onclick="openMeetingModal('add')" title="Tambah Sesi Pertemuan Baru">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    <span>Tambah</span>
+                  </button>
+                  <button class="btn-timeline-action reset" onclick="resetCourseMeetings()" title="Kembalikan ke 16 Sesi Standar Kurikulum">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Row 2: Subhead Context and Session Count Badge -->
+              <div class="sessions-header-row-secondary">
+                <span class="sessions-subhead-label" id="sessionSubheadText">ADPL • Silabus Perkuliahan</span>
+                <span class="session-count-pill" id="sessionCountBadge">16 Sesi</span>
+              </div>
+            </div>
+            <div class="sessions-list-group" id="sessionsListContainer">
+              <!-- Populated dynamically -->
+            </div>
+          </div>
+
+          <!-- Right: Active Session Multimedia Viewer -->
+          <div class="session-viewer-workspace" id="activeSessionContentArea">
+            <!-- Active Session Details rendered via app.js -->
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- ========================================== -->
+      <!-- TAB 3: PUSAT TUGAS & PENGUMPULAN (ASSIGNMENTS) -->
+      <!-- ========================================== -->
+      <section class="tab-pane" id="tab-assignments">
+        
+        <div class="section-view-header">
+          <div>
+            <h2 class="section-view-title">Pusat Informasi & Pengumpulan Tugas</h2>
+            <p class="section-view-subtitle">Kelola dan pantau seluruh tugas perkuliahan individu maupun kelompok beserta tenggat waktunya.</p>
+          </div>
+        </div>
+
+        <!-- Filter Chips -->
+        <div class="assignments-filter-strip">
+          <button class="filter-chip-btn active" data-filter="all">Semua Tugas</button>
+          <button class="filter-chip-btn" data-filter="individu">Tugas Individu</button>
+          <button class="filter-chip-btn" data-filter="kelompok">Tugas Kelompok (Tubes)</button>
+        </div>
+
+        <!-- Assignment Cards List -->
+        <div class="assignments-cards-list" id="assignmentsCardsContainer">
+          <!-- Populated dynamically -->
+        </div>
+
+      </section>
+
+      <!-- ========================================== -->
+      <!-- TAB 4: BANK REFERENSI & E-LIBRARY          -->
+      <!-- ========================================== -->
+      <section class="tab-pane" id="tab-resources">
+        
+        <div class="section-view-header">
+          <div>
+            <h2 class="section-view-title">Bank Referensi & E-Library Mahasiswa</h2>
+            <p class="section-view-subtitle">Kumpulan buku ajar resmi, standar rekayasa IEEE/ISO, tools pemodelan diagram UML, dan jurnal pendukung.</p>
+          </div>
+        </div>
+
+        <div class="resources-library-grid" id="resourcesLibraryGrid">
+          <!-- Populated dynamically from GLOBAL_RESOURCES -->
+        </div>
+
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Modal: Pengumpulan Tugas (Submission Modal) -->
+  <div class="modal-backdrop" id="submissionModalBackdrop">
+    <div class="modal-box-card">
+      <div class="modal-header-row">
+        <div>
+          <span style="font-size: 0.72rem; font-weight: 700; color: var(--primary-400); text-transform: uppercase;">Formulir Pengumpulan Tugas</span>
+          <h3 class="modal-title" id="submissionModalTitle">Judul Tugas</h3>
+        </div>
+        <button class="btn-close-modal" id="closeSubmissionModalBtn">&times;</button>
+      </div>
+
+      <form id="submissionForm">
+        <!-- Drag & Drop Zone -->
+        <label for="fileDropInput" class="dropzone-file-upload">
+          <input type="file" id="fileDropInput" style="display: none;" accept=".pdf,.zip,.rar,.docx">
+          <div style="font-size: 2.2rem; margin-bottom: 0.5rem;">📁</div>
+          <div style="font-weight: 600; font-size: 0.95rem; margin-bottom: 0.2rem;">Klik atau Seret Berkas ke Sini</div>
+          <div style="font-size: 0.75rem; color: var(--text-tertiary);">Format yang didukung: PDF, ZIP, RAR (Maks. 25MB)</div>
+          <div id="submissionFileNameLabel" style="font-size: 0.82rem; color: var(--accent-cyan); margin-top: 0.75rem; font-weight: 600;">Belum ada berkas dipilih</div>
+        </label>
+
+        <!-- Link Repository / Cloud Drive -->
+        <div class="form-group-field">
+          <label class="form-label-text">Tautan Cloud / Repository (Opsional)</label>
+          <input type="url" class="form-input-text" id="submissionLinkInput" placeholder="https://github.com/... atau https://drive.google.com/...">
+        </div>
+
+        <!-- Note / Catatan Tambahan -->
+        <div class="form-group-field">
+          <label class="form-label-text">Catatan untuk Dosen Pengampu (Opsional)</label>
+          <textarea class="form-input-text" id="submissionNotesInput" rows="2" placeholder="Tuliskan catatan tambahan mengenai berkas atau anggota kelompok..."></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
+          <button type="button" class="btn-secondary-glass" onclick="document.getElementById('submissionModalBackdrop').classList.remove('active')">Batal</button>
+          <button type="submit" class="btn-primary-gradient">Simpan & Kumpulkan Tugas 📤</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Pengelola Konten & Edit Materi (CMS Modal) -->
+  <div class="modal-backdrop" id="contentManagerModal">
+    <div class="modal-box-card" style="max-width: 620px;">
+      <div class="modal-header-row">
+        <div>
+          <span style="font-size: 0.72rem; font-weight: 700; color: var(--accent-cyan); text-transform: uppercase;" id="contentModalSubtitle">Kelola Materi Perkuliahan</span>
+          <h3 class="modal-title" id="contentModalTitle">Tambah / Edit Konten</h3>
+        </div>
+        <button class="btn-close-modal" onclick="closeContentModal()">&times;</button>
+      </div>
+
+      <form id="contentManagerForm" onsubmit="handleSaveContentItem(event)">
+        <div id="contentManagerFormBody">
+          <!-- Dynamic form fields injected here -->
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
+          <button type="button" class="btn-secondary-glass" onclick="closeContentModal()">Batal</button>
+          <button type="submit" class="btn-primary-gradient" id="btnSubmitContentModal">Simpan Perubahan 💾</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Tambah / Edit Mata Kuliah (Course Manager) -->
+  <div class="modal-backdrop" id="courseModal">
+    <div class="modal-box-card" style="max-width: 650px;">
+      <div class="modal-header-row">
+        <div>
+          <span style="font-size: 0.72rem; font-weight: 700; color: var(--primary-400); text-transform: uppercase;" id="courseModalSubtitle">Manajemen Kurikulum & Kelas</span>
+          <h3 class="modal-title" id="courseModalTitle">Tambah / Edit Mata Kuliah</h3>
+        </div>
+        <button class="btn-close-modal" onclick="closeCourseModal()">&times;</button>
+      </div>
+
+      <form id="courseManagerForm" onsubmit="handleSaveCourse(event)">
+        <input type="hidden" id="courseFormId">
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-group-field" style="grid-column: 1 / -1;">
+            <label class="form-label-text">Nama Mata Kuliah</label>
+            <input type="text" class="form-input-text" id="courseFormTitle" placeholder="Contoh: Analisis dan Design PL" required>
+          </div>
+
+          <div class="form-group-field">
+            <label class="form-label-text">Nama Kelas Lengkap (Sesuai Portal KRS)</label>
+            <input type="text" class="form-input-text" id="courseFormClassName" placeholder="Contoh: Analisis dan Design PL TI24D" required>
+          </div>
+
+          <div class="form-group-field">
+            <label class="form-label-text">Kode Kelas / Kode Matkul</label>
+            <input type="text" class="form-input-text" id="courseFormCode" placeholder="Contoh: TI24D" required>
+          </div>
+
+          <div class="form-group-field">
+            <label class="form-label-text">Singkatan / Alias Mata Kuliah</label>
+            <input type="text" class="form-input-text" id="courseFormAlias" placeholder="Contoh: ADPL" required>
+          </div>
+
+          <div class="form-group-field">
+            <label class="form-label-text">Jumlah SKS</label>
+            <input type="number" class="form-input-text" id="courseFormSKS" value="3" min="1" max="6" required>
+          </div>
+
+          <div class="form-group-field">
+            <label class="form-label-text">Jadwal Kuliah (Hari / Jam)</label>
+            <input type="text" class="form-input-text" id="courseFormSchedule" placeholder="Contoh: Senin 13:00:00 s/d 15:30:00" required>
+          </div>
+
+          <div class="form-group-field">
+            <label class="form-label-text">Ruangan Kuliah</label>
+            <input type="text" class="form-input-text" id="courseFormRoom" placeholder="Contoh: Mahdor D 406" required>
+          </div>
+
+          <div class="form-group-field">
+            <label class="form-label-text">Dosen Pengampu</label>
+            <input type="text" class="form-input-text" id="courseFormLecturer" placeholder="Contoh: Dr. Ir. Hendra Gunawan, M.T." required>
+          </div>
+
+          <div class="form-group-field">
+            <label class="form-label-text">Fakultas / Program Studi</label>
+            <input type="text" class="form-input-text" id="courseFormDepartment" value="FT T. Informatika" required>
+          </div>
+
+          <div class="form-group-field">
+            <label class="form-label-text">Kategori Mata Kuliah</label>
+            <select class="form-input-text" id="courseFormCategory">
+              <option value="Wajib Program Studi">Wajib Program Studi</option>
+              <option value="Wajib Universitas">Wajib Universitas</option>
+              <option value="Pilihan Keahlian">Pilihan Keahlian</option>
+              <option value="Pilihan Konsentrasi">Pilihan Konsentrasi</option>
+            </select>
+          </div>
+
+          <div class="form-group-field">
+            <label class="form-label-text">Sampul Gambar (Thumbnail)</label>
+            <select class="form-input-text" id="courseFormThumbnail">
+              <option value="assets/hero_banner.jpg">Ilustrasi Platform Edukasi (Hero Banner)</option>
+              <option value="assets/course_web.jpg">Ilustrasi Web & Cloud Computing</option>
+              <option value="assets/sdlc_infographic.jpg">Ilustrasi Diagram Arsitektur SDLC</option>
+            </select>
+          </div>
+
+          <div class="form-group-field" style="grid-column: 1 / -1;">
+            <label class="form-label-text">Deskripsi Ringkas Mata Kuliah</label>
+            <textarea class="form-input-text" id="courseFormDescription" rows="2" placeholder="Tuliskan tujuan dan bahasan utama mata kuliah..."></textarea>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
+          <button type="button" class="btn-secondary-glass" onclick="closeCourseModal()">Batal</button>
+          <button type="submit" class="btn-primary-gradient" id="btnSubmitCourseModal">Simpan Mata Kuliah 💾</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Tambah / Edit Sesi Pertemuan (Meeting Session Manager) -->
+  <div class="modal-backdrop" id="meetingModal" onclick="if(event.target === this) closeMeetingModal()">
+    <div class="modal-box-card" style="max-width: 680px; max-height: 90vh; overflow-y: auto;">
+      <div class="modal-header-row">
+        <div>
+          <span style="font-size: 0.72rem; font-weight: 700; color: var(--primary-400); text-transform: uppercase;" id="meetingModalSubtitle">Silabus & Jadwal Pertemuan</span>
+          <h3 class="modal-title" id="meetingModalTitle">Tambah / Edit Sesi Pertemuan</h3>
+        </div>
+        <button class="btn-close-modal" onclick="closeMeetingModal()">&times;</button>
+      </div>
+
+      <form id="meetingManagerForm" onsubmit="handleSaveMeeting(event)">
+        <input type="hidden" id="meetingFormId">
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          
+          <div class="form-group-field" style="grid-column: 1 / -1;">
+            <label class="form-label-text">Judul Materi Pertemuan</label>
+            <input type="text" class="form-input-text" id="meetingFormTitle" placeholder="Contoh: Pemodelan Domain Bisnis & Class Diagram" required>
+          </div>
+
+          <div class="form-group-field">
+            <label class="form-label-text">Nomor Pertemuan (Ke-)</label>
+            <input type="number" class="form-input-text" id="meetingFormNumber" min="1" max="50" required>
+          </div>
+
+          <div class="form-group-field">
+            <label class="form-label-text">Jadwal & Durasi Waktu</label>
+            <input type="text" class="form-input-text" id="meetingFormDuration" placeholder="Contoh: 90 Menit atau Senin 13:00 - 15:30" required>
+          </div>
+
+          <div class="form-group-field" style="grid-column: 1 / -1;">
+            <label class="form-label-text">Tagline / Ringkasan Singkat Topik Bahasan</label>
+            <input type="text" class="form-input-text" id="meetingFormTagline" placeholder="Contoh: Konsep dasar, studi kasus, pemodelan relasi asosiasi dan inheritance...">
+          </div>
+
+          <div class="form-group-field" style="grid-column: 1 / -1;">
+            <label class="form-label-text">Gambaran Umum / Sasaran Pembelajaran (Overview)</label>
+            <textarea class="form-input-text" id="meetingFormOverview" rows="2" placeholder="Tuliskan tujuan kompetensi dan capaian pembelajaran mahasiswa pada sesi ini..."></textarea>
+          </div>
+
+          <!-- Pengaturan Tugas -->
+          <div class="form-group-field">
+            <label class="form-label-text">Ada Tugas di Sesi Ini?</label>
+            <select class="form-input-text" id="meetingFormAssignmentType" onchange="toggleAssignmentFields()">
+              <option value="none">Tidak Ada Tugas</option>
+              <option value="Individu">Tugas Individu</option>
+              <option value="Kelompok">Tugas Kelompok</option>
+            </select>
+          </div>
+
+          <div class="form-group-field" id="meetingDeadlineGroup" style="display: none;">
+            <label class="form-label-text">Tenggat Waktu Tugas (Deadline)</label>
+            <input type="text" class="form-input-text" id="meetingFormAssignmentDeadline" placeholder="2026-11-28 23:59:00">
+          </div>
+
+          <div class="form-group-field" id="meetingTitleGroup" style="grid-column: 1 / -1; display: none;">
+            <label class="form-label-text">Judul Tugas Perkuliahan</label>
+            <input type="text" class="form-input-text" id="meetingFormAssignmentTitle" placeholder="Contoh: Tugas Mandiri: Analisis Kebutuhan Sistem">
+          </div>
+
+          <!-- Media Opsional -->
+          <div class="form-group-field">
+            <label class="form-label-text">URL Video Pembelajaran YouTube (Opsional)</label>
+            <input type="text" class="form-input-text" id="meetingFormVideoUrl" placeholder="https://www.youtube-nocookie.com/embed/...">
+          </div>
+
+          <div class="form-group-field">
+            <label class="form-label-text">Pilihan Infografis Pendukung</label>
+            <select class="form-input-text" id="meetingFormInfographic">
+              <option value="assets/sdlc_infographic.jpg">Infografis Siklus Rekayasa & SDLC</option>
+              <option value="assets/hero_banner.jpg">Ilustrasi Platform Edukasi Terstruktur</option>
+              <option value="assets/course_web.jpg">Diagram Arsitektur Web & Cloud</option>
+            </select>
+          </div>
+
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
+          <button type="button" class="btn-secondary-glass" onclick="closeMeetingModal()">Batal</button>
+          <button type="submit" class="btn-primary-gradient" id="btnSubmitMeetingModal">Simpan Pertemuan 💾</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Edit Profil Mahasiswa (Username / Identitas) -->
+  <div class="modal-backdrop" id="profileModal">
+    <div class="modal-box-card" style="max-width: 480px;">
+      <div class="modal-header-row">
+        <div>
+          <span style="font-size: 0.72rem; font-weight: 700; color: var(--primary-400); text-transform: uppercase;">Identitas Akun Mahasiswa</span>
+          <h3 class="modal-title">Edit Profil Mahasiswa</h3>
+        </div>
+        <button class="btn-close-modal" onclick="closeProfileModal()">&times;</button>
+      </div>
+
+      <form id="profileForm" onsubmit="handleSaveProfile(event)">
+        <div class="form-group-field" style="margin-bottom: 1rem;">
+          <label class="form-label-text">Nama Lengkap Mahasiswa</label>
+          <input type="text" class="form-input-text" id="profileFormName" value="Salwa Della Amalia" required>
+        </div>
+
+        <div class="form-group-field" style="margin-bottom: 1rem;">
+          <label class="form-label-text">Nomor Induk Mahasiswa (NIM)</label>
+          <input type="text" class="form-input-text" id="profileFormNim" value="24011150" required>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+          <div class="form-group-field">
+            <label class="form-label-text">Semester Aktif</label>
+            <input type="number" class="form-input-text" id="profileFormSemester" value="5" min="1" max="14" required>
+          </div>
+          <div class="form-group-field">
+            <label class="form-label-text">Inisial Avatar</label>
+            <input type="text" class="form-input-text" id="profileFormAvatar" value="SD" maxlength="3" required>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
+          <button type="button" class="btn-secondary-glass" onclick="closeProfileModal()">Batal</button>
+          <button type="submit" class="btn-primary-gradient">Simpan Profil 💾</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Zoom Infografis Resolusi Tinggi -->
+  <div class="modal-backdrop" id="imageViewerModal" onclick="closeImageModal()">
+    <div style="max-width: 90vw; max-height: 90vh; position: relative;" onclick="event.stopPropagation()">
+      <button class="btn-close-modal" style="position: absolute; top: -40px; right: 0; color: #fff; font-size: 2rem;" onclick="closeImageModal()">&times;</button>
+      <img id="imageViewerImg" src="" alt="Zoom Infografis" style="width: 100%; height: auto; max-height: 85vh; object-fit: contain; border-radius: var(--radius-md); box-shadow: var(--shadow-lg);">
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Scripts -->
+  <script src="js/data.js?v=2.3"></script>
+  <script src="js/app.js?v=2.3"></script>
+</body>
+</html>
